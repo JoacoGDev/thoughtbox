@@ -1,0 +1,85 @@
+const express = require('express');
+const { db } = require('../db');
+const { analyseThought } = require('../services/ai');
+const { validate, analyzeSchema } = require('../middleware/validate');
+
+const router = express.Router();
+
+const parseThought = (row) => ({
+  ...row,
+  tags: JSON.parse(row.tags || '[]'),
+});
+
+// ── GET /api/thoughts ─────────────────────────────────────────────
+router.get('/', async (req, res, next) => {
+  try {
+    const { tag } = req.query;
+    let result;
+
+    if (tag) {
+      result = await db.execute({
+        sql: `SELECT * FROM thoughts WHERE tags LIKE ? ORDER BY created_at DESC`,
+        args: [`%"${tag}"%`],
+      });
+    } else {
+      result = await db.execute('SELECT * FROM thoughts ORDER BY created_at DESC');
+    }
+
+    res.json(result.rows.map(parseThought));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── GET /api/thoughts/:id ─────────────────────────────────────────
+router.get('/:id', async (req, res, next) => {
+  try {
+    const result = await db.execute({
+      sql: 'SELECT * FROM thoughts WHERE id = ?',
+      args: [req.params.id],
+    });
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Thought not found' });
+    res.json(parseThought(result.rows[0]));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── POST /api/thoughts/analyze ────────────────────────────────────
+router.post('/analyze', validate(analyzeSchema), async (req, res, next) => {
+  const { text } = req.body;
+  try {
+    const analysis = await analyseThought(text);
+
+    const insertResult = await db.execute({
+      sql: 'INSERT INTO thoughts (raw_text, title, summary, tags) VALUES (?, ?, ?, ?)',
+      args: [text, analysis.title, analysis.summary, JSON.stringify(analysis.tags)],
+    });
+
+    const newId = insertResult.lastInsertRowid;
+    const fetched = await db.execute({
+      sql: 'SELECT * FROM thoughts WHERE id = ?',
+      args: [newId],
+    });
+
+    res.status(201).json(parseThought(fetched.rows[0]));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── DELETE /api/thoughts/:id ──────────────────────────────────────
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const result = await db.execute({
+      sql: 'DELETE FROM thoughts WHERE id = ?',
+      args: [req.params.id],
+    });
+    if (result.rowsAffected === 0) return res.status(404).json({ error: 'Thought not found' });
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;
