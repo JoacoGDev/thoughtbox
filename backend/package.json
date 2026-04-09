@@ -8,7 +8,6 @@
     "dev": "node --watch src/index.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
     "@libsql/client": "^0.14.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -16,6 +15,7 @@
     "express-rate-limit": "^7.2.0",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
+    "openai": "^6.34.0",
     "zod": "^3.22.4"
   }
 }
