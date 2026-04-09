@@ -9,7 +9,7 @@
 | Frontend | React 18 + Vite                   |
 | Backend  | Node.js 18+ + Express             |
 | Database | SQLite via `@libsql/client`       |
-¿
+
 
 ---
 
