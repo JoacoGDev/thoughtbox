@@ -8,8 +8,8 @@
 |----------|-----------------------------------|
 | Frontend | React 18 + Vite                   |
 | Backend  | Node.js 18+ + Express             |
-| Database | SQLite via `@libsql/client` (pure JS — no compilation needed) |
-| AI       | Anthropic Claude (claude-sonnet-4) |
+| Database | SQLite via `@libsql/client`       |
+¿
 
 ---
 
