@@ -4,9 +4,9 @@ const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 export const ThoughtCard = ({ thought, onDelete, onTagClick }) => {
-  const [expanded, setExpanded]     = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [confirming, setConfirming] = useState(false);
-  const [deleting, setDeleting]     = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
     if (!confirming) { setConfirming(true); return; }
@@ -36,6 +36,18 @@ export const ThoughtCard = ({ thought, onDelete, onTagClick }) => {
       </header>
 
       <p className="card-summary">{thought.summary}</p>
+
+      {thought.insight && (
+        <p className="card-insight">{thought.insight}</p>
+      )}
+
+      {thought.connections?.length > 0 && (
+        <ul className="card-connections">
+          {thought.connections.map((c, i) => (
+            <li key={i}>{c}</li>
+          ))}
+        </ul>
+      )}
 
       <div className="card-tags">
         {thought.tags.map((tag) => (
