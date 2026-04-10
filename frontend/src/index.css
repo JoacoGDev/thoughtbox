@@ -148,3 +148,35 @@ body { font-family: var(--font-sans); background: var(--paper); color: var(--ink
   color: var(--ink-mid);
   line-height: 1.4;
 }
+
+.card-insight {
+  font-size: 13px;
+  color: var(--accent);
+  font-style: italic;
+  line-height: 1.55;
+  border-left: 2px solid var(--accent-bg);
+  padding-left: 10px;
+}
+
+.card-connections {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+}
+
+.card-connections li {
+  font-size: 12px;
+  color: var(--ink-soft);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.card-connections li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--ink-faint);
+}
