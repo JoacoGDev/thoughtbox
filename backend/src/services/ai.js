@@ -7,20 +7,9 @@ if (!process.env.OPENAI_API_KEY) {
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const ALLOWED_TAGS = [
-  'ideas',
-  'work',
-  'personal',
-  'learning',
-  'writing',
-  'health',
-  'relationships',
-  'projects',
-  'quotes',
-  'questions',
-  'decisions',
-  'tasks',
-  'reflections',
-  'creativity'
+  'ideas', 'work', 'personal', 'learning', 'writing',
+  'health', 'relationships', 'projects', 'quotes',
+  'questions', 'decisions', 'tasks', 'reflections', 'creativity'
 ];
 
 const SYSTEM_PROMPT = `
@@ -56,18 +45,11 @@ const analyseThought = async (text, attempt = 1) => {
             type: 'object',
             additionalProperties: false,
             properties: {
-              title: {
-                type: 'string'
-              },
-              summary: {
-                type: 'string'
-              },
+              title: { type: 'string' },
+              summary: { type: 'string' },
               tags: {
                 type: 'array',
-                items: {
-                  type: 'string',
-                  enum: ALLOWED_TAGS
-                },
+                items: { type: 'string', enum: ALLOWED_TAGS },
                 minItems: 1,
                 maxItems: 2
               }
@@ -111,4 +93,64 @@ const analyseThought = async (text, attempt = 1) => {
   }
 };
 
-module.exports = { analyseThought };
+/**
+ * Given a new thought and a list of existing thoughts,
+ * returns the IDs of those that are genuinely related (max 3).
+ * Returns [] if there are no existing thoughts or none are related.
+ */
+const findRelatedThoughts = async (newThought, existingThoughts) => {
+  if (existingThoughts.length === 0) return [];
+
+  // Cap at 20 to avoid huge prompts — most recent first
+  const candidates = existingThoughts.slice(0, 20);
+
+  const candidateList = candidates
+    .map((t) => `ID ${t.id}: "${t.title}" — ${t.summary}`)
+    .join('\n');
+
+  const response = await client.chat.completions.create({
+    model: 'gpt-4o-mini',
+    max_tokens: 100,
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'related_thoughts',
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            related_ids: {
+              type: 'array',
+              items: { type: 'number' },
+              maxItems: 3
+            }
+          },
+          required: ['related_ids']
+        }
+      }
+    },
+    messages: [
+      {
+        role: 'system',
+        content: `You find meaningful conceptual connections between thoughts.
+Given a new thought and a list of existing ones, return the IDs of those that are genuinely related — shared theme, complementary idea, or useful contrast.
+Be selective: only return IDs with a real connection. If nothing is related, return an empty array.
+Return ONLY a JSON object with a "related_ids" array of numbers.`
+      },
+      {
+        role: 'user',
+        content: `New thought: "${newThought.title}" — ${newThought.summary}\n\nExisting thoughts:\n${candidateList}`
+      }
+    ]
+  });
+
+  const parsed = JSON.parse(response.choices[0].message.content);
+  const validIds = new Set(candidates.map((t) => t.id));
+
+  // Only return IDs that actually exist in our candidate list
+  return parsed.related_ids
+    .map(Number)
+    .filter((id) => validIds.has(id));
+};
+
+module.exports = { analyseThought, findRelatedThoughts };
