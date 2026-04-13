@@ -69,7 +69,7 @@ const PORT = process.env.PORT || 3001;
 
 bootstrap().then(() => {
   app.listen(PORT, () => {
-    console.log(`\n🚀 Thoughtbox backend running on http://localhost:${PORT}`);
+    console.log(`\n Thoughtbox backend running on http://localhost:${PORT}`);
     console.log(`   Node ${process.version} | ${process.env.NODE_ENV || 'development'}`);
     console.log(`   Allowed origins: ${allowedOrigins.join(', ')}\n`);
   });
