@@ -37,6 +37,12 @@ const bootstrap = async () => {
     `);
   });
 
+  await runMigration('004_add_related_thought_ids', async () => {
+    await db.executeMultiple(`
+      ALTER TABLE thoughts ADD COLUMN related_thought_ids TEXT NOT NULL DEFAULT '[]';
+    `);
+  });
+
   console.log('  ✓ Database ready');
 };
 
