@@ -7,7 +7,8 @@ const router = express.Router();
 
 const parseThought = (row) => ({
   ...row,
-  tags: JSON.parse(row.tags || '[]'),
+  tags:        JSON.parse(row.tags        || '[]'),
+  connections: JSON.parse(row.connections || '[]'),
 });
 
 // GET /api/thoughts
@@ -54,9 +55,9 @@ router.post('/analyze', validate(analyzeSchema), async (req, res, next) => {
 
     // 2. Save it
     const insertResult = await db.execute({
-      sql: 'INSERT INTO thoughts (raw_text, title, summary, tags) VALUES (?, ?, ?, ?)',
-      args: [text, analysis.title, analysis.summary, JSON.stringify(analysis.tags)],
-    });
+  sql: 'INSERT INTO thoughts (raw_text, title, summary, insight, connections, tags) VALUES (?, ?, ?, ?, ?, ?)',
+  args: [text, analysis.title, analysis.summary, analysis.insight, JSON.stringify(analysis.connections), JSON.stringify(analysis.tags)],
+});
 
     const newId = Number(insertResult.lastInsertRowid);
     const fetched = await db.execute({
