@@ -1,76 +1,65 @@
-# Thoughtbox ✦
+# Thoughtbox
 
-> Capture any thought. Let AI title, summarise, and tag it for you.
+> Capture raw thoughts and turn them into structured notes with AI.
 
-## Stack
+Thoughtbox is a lightweight full-stack application that helps users save ideas quickly and organise them automatically. You write a raw thought, and the app uses the OpenAI API to generate a clear title, a concise summary, and useful tags for retrieval.
 
-| Layer    | Technology                        |
-|----------|-----------------------------------|
-| Frontend | React 18 + Vite                   |
-| Backend  | Node.js 18+ + Express             |
-| Database | SQLite via `@libsql/client`       |
-
+It is designed as a small but solid project that demonstrates a practical AI workflow, a clean frontend/backend separation, and safe API-key handling.
 
 ---
 
-## Quick start
+## Features
 
-### 1. Install dependencies
+- Capture raw thoughts in plain language
+- Generate an AI-powered title, summary, and tags
+- Store thoughts in a local SQLite database
+- Browse all saved thoughts in a clean interface
+- Filter thoughts by tag
+- Delete thoughts when no longer needed
+- Keep the OpenAI API key securely on the backend only
 
-```bash
-npm run install:all
-```
+---
 
-### 2. Add your API key
+## Tech stack
 
-```bash
-# Windows
-copy backend\.env.example backend\.env
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 + Vite |
+| Backend | Node.js 18+ + Express |
+| Database | SQLite via `@libsql/client` |
+| Validation | Zod |
+| AI | OpenAI API |
 
-# Mac / Linux
-cp backend/.env.example backend/.env
-```
+---
 
-Open `backend/.env` and paste your Anthropic API key:
+## How it works
 
-```
-ANTHROPIC_API_KEY=sk-ant-your-key-here
-```
+1. The user writes a raw thought in the frontend.
+2. The frontend sends that text to the backend.
+3. The backend calls the OpenAI API.
+4. The AI returns structured output:
+   - title
+   - summary
+   - tags
+5. The backend saves the result to SQLite.
+6. The frontend refreshes and displays the new thought.
 
-Get a key at https://console.anthropic.com
-
-### 3. Start the servers
-
-Because `&` doesn't work in Windows PowerShell, open **two terminals**:
-
-**Terminal 1 — backend:**
-```bash
-cd backend
-npm run dev
-```
-
-**Terminal 2 — frontend:**
-```bash
-cd frontend
-npm run dev
-```
-
-Open **http://localhost:5173** in your browser.
+This keeps the browser simple and prevents the API key from ever being exposed client-side.
 
 ---
 
 ## Project structure
 
-```
+```text
 thoughtbox/
 ├── backend/
 │   ├── src/
-│   │   ├── index.js               # Express app + all middleware
-│   │   ├── db.js                  # SQLite connection + table setup
+│   │   ├── index.js               # Express app + middleware setup
+│   │   ├── db.js                  # SQLite connection + schema setup
 │   │   ├── routes/
-│   │   │   └── thoughts.js        # GET, POST /analyze, DELETE
+│   │   │   └── thoughts.js        # Thought routes
 │   │   ├── services/
-│   │   │   └── ai.js              # Anthropic API + retry logic
+│   │   │   └── ai.js              # OpenAI integration + response parsing
 │   │   └── middleware/
 │   │       └── validate.js        # Zod request validation
 │   ├── .env.example
@@ -79,7 +68,7 @@ thoughtbox/
 ├── frontend/
 │   ├── src/
 │   │   ├── App.jsx
-│   │   ├── api.js                 # All fetch() calls in one place
+│   │   ├── api.js                 # API calls
 │   │   ├── index.css
 │   │   ├── main.jsx
 │   │   ├── components/
@@ -87,75 +76,207 @@ thoughtbox/
 │   │   │   ├── ThoughtForm.jsx
 │   │   │   └── TagFilter.jsx
 │   │   └── hooks/
-│   │       └── useThoughts.js     # All state + data fetching
+│   │       └── useThoughts.js     # State management + data fetching
 │   ├── index.html
-│   ├── vite.config.js             # Proxies /api → localhost:3001
+│   ├── vite.config.js             # Dev proxy for /api
 │   └── package.json
 ├── .gitignore
-└── package.json                   # install:all script
+└── package.json                   # Root scripts
 ```
+
+---
+
+## Requirements
+
+Before running the project, make sure you have:
+
+- Node.js 18 or newer
+- npm
+- An OpenAI API key
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/thoughtbox.git
+cd thoughtbox
+```
+
+### 2. Install dependencies
+
+```bash
+npm run install:all
+```
+
+### 3. Create the environment file
+
+**Windows**
+
+```bash
+copy backend\.env.example backend\.env
+```
+
+**macOS / Linux**
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+### 4. Add your OpenAI API key
+
+Open `backend/.env` and set:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+You can create an API key from the OpenAI Platform dashboard.
+
+---
+
+## Running the project
+
+Because running both servers from a single root command may not work reliably on every shell, the safest approach is to use two terminals.
+
+### Terminal 1 — backend
+
+```bash
+cd backend
+npm run dev
+```
+
+### Terminal 2 — frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:5173
+```
+
+---
+
+## Environment variables
+
+The backend uses a `.env` file.
+
+### Required
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Do not expose this key in the frontend.
 
 ---
 
 ## API reference
 
-| Method | Endpoint                  | Description               |
-|--------|---------------------------|---------------------------|
-| GET    | `/api/thoughts`           | List all thoughts         |
-| GET    | `/api/thoughts?tag=foo`   | Filter by tag             |
-| GET    | `/api/thoughts/:id`       | Get one thought           |
-| POST   | `/api/thoughts/analyze`   | Analyse + save a thought  |
-| DELETE | `/api/thoughts/:id`       | Delete a thought          |
-| GET    | `/health`                 | Server health check       |
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/thoughts` | List all thoughts |
+| GET | `/api/thoughts?tag=foo` | Filter thoughts by tag |
+| GET | `/api/thoughts/:id` | Get a single thought |
+| POST | `/api/thoughts/analyze` | Analyze and save a new thought |
+| DELETE | `/api/thoughts/:id` | Delete a thought |
+| GET | `/health` | Health check |
 
-### POST /api/thoughts/analyze — request body
+### Example request
+
+**POST** `/api/thoughts/analyze`
+
 ```json
-{ "text": "Your raw thought here" }
+{
+  "text": "Plato's concept of forms may explain why abstract patterns feel more real than the things that imitate them."
+}
 ```
 
-### Response
+### Example response
+
 ```json
 {
   "id": 1,
-  "raw_text": "Your raw thought here",
-  "title": "AI-generated title",
-  "summary": "One-sentence summary.",
-  "tags": ["tag-one", "tag-two"],
-  "created_at": "2025-01-01T12:00:00"
+  "raw_text": "Plato's concept of forms may explain why abstract patterns feel more real than the things that imitate them.",
+  "title": "Plato and abstract reality",
+  "summary": "A reflection on Plato's theory of forms and why abstract structures can feel more fundamental than physical copies.",
+  "tags": ["philosophy", "plato", "abstraction"],
+  "created_at": "2026-04-15T12:00:00Z"
 }
 ```
 
 ---
 
-## Why each technology was chosen
+## Development notes
 
-**`@libsql/client` instead of `better-sqlite3`**
-`better-sqlite3` is a native C++ addon — on Windows it requires Microsoft Visual Studio Build Tools to compile, which is a multi-GB install. `@libsql/client` is pure JavaScript, works on any OS out of the box, and reads/writes the exact same SQLite `.db` file format.
+### Why `@libsql/client`?
 
-**`node --watch` instead of `nodemon`**
-Node 18+ ships with a built-in `--watch` flag that restarts the process when files change. No extra dependency needed.
+`@libsql/client` works well for lightweight local persistence and avoids the native compilation issues that can appear with alternatives such as `better-sqlite3`, especially on Windows.
 
-**Vite proxy**
-`vite.config.js` proxies `/api` → `http://localhost:3001` during development. This means the browser only ever talks to port 5173 — no CORS issues, no headers to configure, and your API key stays on the server.
+### Why a backend for AI calls?
 
----
+The OpenAI API key must remain private. By placing AI logic in the backend:
 
-## What you'll learn from this codebase
+- the key stays server-side
+- prompts can be controlled centrally
+- validation and retries are easier to manage
+- the frontend remains simpler
 
-- **Express middleware chain** — security (Helmet), CORS, rate limiting, body parsing, logging, error handling — all in the right order
-- **Layered architecture** — routes → services → external APIs, one job per file
-- **Zod validation** — typed, declarative request validation with useful error messages
-- **Async SQLite** — `@libsql/client` uses `async/await`, the standard pattern in Node
-- **Anthropic SDK** — structured prompting, JSON output parsing, retry on failure
-- **React custom hooks** — all state and fetching in `useThoughts`, components are pure UI
-- **API key safety** — key lives only in `.env`, loaded server-side, never reaches the browser
+### Why Vite proxy?
+
+During development, Vite proxies `/api` requests to the Express server. This makes local development cleaner and avoids common CORS issues.
 
 ---
 
-## Next steps (Stage 3 ideas)
+## What this project demonstrates
 
-- [ ] Keyword search across thoughts
-- [ ] Related thoughts — send all saved thoughts to Claude, ask it to find connections
-- [ ] Edit tags manually
-- [ ] Export to Markdown
-- [ ] User authentication
+This project is intentionally small, but it shows several useful real-world patterns:
+
+- Express middleware setup
+- request validation with Zod
+- separation between routes, services, and data access
+- safe environment variable handling
+- integrating an LLM into a web application
+- React state management with custom hooks
+- local persistence with SQLite
+
+---
+
+## Possible next improvements
+
+- Full-text search across thoughts
+- Manual editing for titles, summaries, or tags
+- Related thoughts and connection suggestions
+- Export to Markdown or JSON
+- User authentication
+- Pagination for larger datasets
+
+---
+
+## Scripts
+
+### Root
+
+```bash
+npm run install:all
+```
+
+## Running the app
+
+Run everything with a single command from the project root:
+
+```bash
+npm run dev
+
+```bash
+npm run dev
+```
+
+---
+
