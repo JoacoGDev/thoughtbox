@@ -274,9 +274,5 @@ Run everything with a single command from the project root:
 ```bash
 npm run dev
 
-```bash
-npm run dev
-```
-
 ---
 
