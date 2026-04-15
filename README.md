@@ -10,13 +10,13 @@ It is designed as a small but solid project that demonstrates a practical AI wor
 
 ## Features
 
-- Capture raw thoughts in plain language
-- Generate an AI-powered title, summary, and tags
-- Store thoughts in a local SQLite database
-- Browse all saved thoughts in a clean interface
+- Capture raw thoughts in natural language
+- Use OpenAI to generate a concise title, summary, and tags
+- Add an extra AI-generated insight when useful
+- Suggest conceptual connections for each thought
+- Automatically detect and return related previously saved thoughts
 - Filter thoughts by tag
-- Delete thoughts when no longer needed
-- Keep the OpenAI API key securely on the backend only
+- Persist data locally with SQLite
 
 ---
 
@@ -179,14 +179,14 @@ Do not expose this key in the frontend.
 
 ## API reference
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/thoughts` | List all thoughts |
-| GET | `/api/thoughts?tag=foo` | Filter thoughts by tag |
-| GET | `/api/thoughts/:id` | Get a single thought |
-| POST | `/api/thoughts/analyze` | Analyze and save a new thought |
-| DELETE | `/api/thoughts/:id` | Delete a thought |
-| GET | `/health` | Health check |
+| Method | Endpoint                | Description                                                |
+|--------|-------------------------|------------------------------------------------------------|
+| GET    | `/api/thoughts`         | List all thoughts, including related thoughts              |
+| GET    | `/api/thoughts?tag=foo` | List thoughts filtered by tag                              |
+| GET    | `/api/thoughts/:id`     | Get a single thought by id, including related thoughts     |
+| POST   | `/api/thoughts/analyze` | Analyse, enrich, save a thought, and return related items  |
+| DELETE | `/api/thoughts/:id`     | Delete a thought by id                                     |
+| GET    | `/health`               | Server health check                                        |
 
 ### Example request
 
@@ -203,11 +203,25 @@ Do not expose this key in the frontend.
 ```json
 {
   "id": 1,
-  "raw_text": "Plato's concept of forms may explain why abstract patterns feel more real than the things that imitate them.",
-  "title": "Plato and abstract reality",
-  "summary": "A reflection on Plato's theory of forms and why abstract structures can feel more fundamental than physical copies.",
-  "tags": ["philosophy", "plato", "abstraction"],
-  "created_at": "2026-04-15T12:00:00Z"
+  "raw_text": "Your raw thought here",
+  "title": "AI-generated title",
+  "summary": "One-sentence summary.",
+  "insight": "A short additional reflection or useful contextual note.",
+  "tags": ["philosophy", "plato"],
+  "connections": ["ethics", "dialogue"],
+  "related": [
+    {
+      "id": 2,
+      "raw_text": "Another saved thought",
+      "title": "Related idea",
+      "summary": "A connected summary.",
+      "insight": "Another useful note.",
+      "tags": ["philosophy"],
+      "connections": ["socrates"],
+      "created_at": "2026-04-15T12:00:00.000Z"
+    }
+  ],
+  "created_at": "2026-04-15T12:00:00.000Z"
 }
 ```
 
