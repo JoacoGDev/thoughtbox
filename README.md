@@ -213,27 +213,6 @@ Do not expose this key in the frontend.
 
 ---
 
-## Development notes
-
-### Why `@libsql/client`?
-
-`@libsql/client` works well for lightweight local persistence and avoids the native compilation issues that can appear with alternatives such as `better-sqlite3`, especially on Windows.
-
-### Why a backend for AI calls?
-
-The OpenAI API key must remain private. By placing AI logic in the backend:
-
-- the key stays server-side
-- prompts can be controlled centrally
-- validation and retries are easier to manage
-- the frontend remains simpler
-
-### Why Vite proxy?
-
-During development, Vite proxies `/api` requests to the Express server. This makes local development cleaner and avoids common CORS issues.
-
----
-
 ## What this project demonstrates
 
 This project is intentionally small, but it shows several useful real-world patterns:
@@ -273,6 +252,4 @@ Run everything with a single command from the project root:
 
 ```bash
 npm run dev
-
----
 
