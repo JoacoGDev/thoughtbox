@@ -173,8 +173,6 @@ The backend uses a `.env` file.
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-Do not expose this key in the frontend.
-
 ---
 
 ## API reference
@@ -259,11 +257,4 @@ This project is intentionally small, but it shows several useful real-world patt
 ```bash
 npm run install:all
 ```
-
-## Running the app
-
-Run everything with a single command from the project root:
-
-```bash
-npm run dev
 
