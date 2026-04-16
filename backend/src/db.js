@@ -3,7 +3,7 @@ const path = require('path');
 
 const DB_PATH = process.env.DB_PATH
   ? `file:${process.env.DB_PATH}`
-  : `file:${path.join(__dirname, '../../thoughts.db')}`;
+  : `file:${path.join(__dirname, '../../data/thoughts.db')}`;
 
 const db = createClient({ url: DB_PATH });
 
