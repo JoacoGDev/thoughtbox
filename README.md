@@ -205,8 +205,8 @@ OPENAI_API_KEY=your_openai_api_key_here
   "title": "AI-generated title",
   "summary": "One-sentence summary.",
   "insight": "A short additional reflection or useful contextual note.",
-  "tags": ["philosophy", "plato"],
-  "connections": ["ethics", "dialogue"],
+  "tags": ["learning", "reflections"],
+  "connections": ["ethics relates through moral questioning", "dialogue connects as a form of inquiry"],
   "related": [
     {
       "id": 2,
@@ -214,8 +214,8 @@ OPENAI_API_KEY=your_openai_api_key_here
       "title": "Related idea",
       "summary": "A connected summary.",
       "insight": "Another useful note.",
-      "tags": ["philosophy"],
-      "connections": ["socrates"],
+      "tags": ["learning"],
+      "connections": ["socrates connects through questioning"],
       "created_at": "2026-04-15T12:00:00.000Z"
     }
   ],
@@ -239,49 +239,6 @@ This project is intentionally small, but it shows several useful real-world patt
 
 ---
 
-## Deployment · Production guide
-
-### Backend (Node.js)
-
-**Build:**
-```bash
-cd backend
-npm install --omit=dev
-```
-
-**Run:**
-```bash
-NODE_ENV=production PORT=3001 OPENAI_API_KEY=sk-... npm start
-```
-
-**Environment variables for production:**
-- `OPENAI_API_KEY` — your production OpenAI key
-- `NODE_ENV=production` — disables verbose logging
-- `PORT` — server port (default: 3001)
-- `ALLOWED_ORIGINS` — list of allowed frontend domains (required)
-- `DB_PATH` — absolute path to persist database (optional)
-
-### Frontend (Static)
-
-**Build:**
-```bash
-cd frontend
-npm run build
-```
-
-Outputs to `dist/`. Serve with any static host (Vercel, Netlify, GitHub Pages, etc.).
-
-**Environment at build time:** Set `VITE_API_URL` if your backend is not at `/api`.
-
-### Security notes
-
-- Keep `OPENAI_API_KEY` secret (use env vars, never commit to git)
-- Set `ALLOWED_ORIGINS` to your frontend domain
-- Enable HTTPS in production (required for secure cookies, if you add them)
-- Consider rate limiting via a reverse proxy (nginx, Cloudflare)
-
----
-
 ## Possible next improvements
 
 - Full-text search across thoughts
@@ -291,13 +248,4 @@ Outputs to `dist/`. Serve with any static host (Vercel, Netlify, GitHub Pages, e
 - User authentication
 - Pagination for larger datasets
 
----
-
-## Scripts
-
-### Root
-
-```bash
-npm run install:all
-```
 
