@@ -239,6 +239,49 @@ This project is intentionally small, but it shows several useful real-world patt
 
 ---
 
+## Deployment · Production guide
+
+### Backend (Node.js)
+
+**Build:**
+```bash
+cd backend
+npm install --omit=dev
+```
+
+**Run:**
+```bash
+NODE_ENV=production PORT=3001 OPENAI_API_KEY=sk-... npm start
+```
+
+**Environment variables for production:**
+- `OPENAI_API_KEY` — your production OpenAI key
+- `NODE_ENV=production` — disables verbose logging
+- `PORT` — server port (default: 3001)
+- `ALLOWED_ORIGINS` — list of allowed frontend domains (required)
+- `DB_PATH` — absolute path to persist database (optional)
+
+### Frontend (Static)
+
+**Build:**
+```bash
+cd frontend
+npm run build
+```
+
+Outputs to `dist/`. Serve with any static host (Vercel, Netlify, GitHub Pages, etc.).
+
+**Environment at build time:** Set `VITE_API_URL` if your backend is not at `/api`.
+
+### Security notes
+
+- Keep `OPENAI_API_KEY` secret (use env vars, never commit to git)
+- Set `ALLOWED_ORIGINS` to your frontend domain
+- Enable HTTPS in production (required for secure cookies, if you add them)
+- Consider rate limiting via a reverse proxy (nginx, Cloudflare)
+
+---
+
 ## Possible next improvements
 
 - Full-text search across thoughts
